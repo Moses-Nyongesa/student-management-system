@@ -21,7 +21,10 @@ def add_student():
         print("Invalid age. Must be a number.\n")
         return
 
-    student = {"name": name, "age": age}
+    student_id = 1
+    if students:
+        student_id = max(s["id"] for s in students) + 1
+    student = {"id": student_id, "name": name, "age": age}
     students.append(student)
     save_students(students)
     print("Student added successfully!\n")
@@ -37,29 +40,28 @@ def view_students():
         print("No students found.\n")
         return
     for i, student in enumerate(students):
-        print(f"{i + 1}. Name: {student['name']}, Age: {student['age']}")
+        print(f"ID: {student['id']} | Name: {student['name']} | Age: {student['age']}")
     print()
 
 
 def delete_student():
-    view_students()
-    try:
-        index = int(input("Enter student number to delete: ")) - 1
-        if 0 <= index < len(students):
-            students.pop(index)
+    student_id = int(input("Enter student ID to delete: "))
+
+    for student in students:
+        if student["id"] == student_id:
+            students.remove(student)
             save_students(students)
             print("Student deleted successfully!\n")
-        else:
-            print("Invalid number.\n")
-    except:
-        print("Error occurred.\n") 
+            return
+
+    print("Student not found.\n")
 
 
 def search_student():
     name = input("Enter name to search: ")
     found = False
     for student in students:
-        if student["name"].lower() == name.lower():
+        if name.lower() in student["name"].lower():
             print(f"Found: Name: {student['name']}, Age: {student['age']}\n")
             found = True
     if not found:
