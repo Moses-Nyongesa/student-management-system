@@ -1,4 +1,16 @@
-students = []
+import json
+
+
+def load_students():
+    try:
+        with open("students.json", "r") as file:
+            return json.load(file)
+    except:
+        return []
+
+
+students = load_students()
+
 
 def add_student():
     name = input("Enter student name: ")
@@ -11,7 +23,14 @@ def add_student():
 
     student = {"name": name, "age": age}
     students.append(student)
+    save_students(students)
     print("Student added successfully!\n")
+
+
+def save_students(students):
+    with open("students.json", "w") as file:
+        json.dump(students, file)
+
 
 def view_students():
     if not students:
@@ -21,12 +40,14 @@ def view_students():
         print(f"{i + 1}. Name: {student['name']}, Age: {student['age']}")
     print()
 
+
 def delete_student():
     view_students()
     try:
         index = int(input("Enter student number to delete: ")) - 1
         if 0 <= index < len(students):
             students.pop(index)
+            save_students(students)
             print("Student deleted successfully!\n")
         else:
             print("Invalid number.\n")
