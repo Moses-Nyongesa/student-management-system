@@ -2,7 +2,7 @@ students = []
 
 def add_student():
     name = input("Enter student name: ")
-    age = input("Enter student age: ")
+    age = int(input("Enter student age: "))
     student = {"name": name, "age": age}
     students.append(student)
     print("Student added successfully!\n")
@@ -25,15 +25,26 @@ def delete_student():
         else:
             print("Invalid number.\n")
     except:
-        print("Error occurred.\n")
+        print("Error occurred.\n") 
+
+
+def search_student():
+    name = input("Enter name to search: ")
+    found = False
+    for student in students:
+        if student["name"].lower() == name.lower():
+            print(f"Found: Name: {student['name']}, Age: {student['age']}\n")
+            found = True
+    if not found:
+        print("Student not found.\n")
 
 def menu():
     while True:
-        print("=== Student Management System ===")
         print("1. Add Student")
         print("2. View Students")
         print("3. Delete Student")
-        print("4. Exit")
+        print("4. Search Student")
+        print("5. Exit")
 
         choice = input("Choose an option: ")
 
@@ -44,6 +55,8 @@ def menu():
         elif choice == "3":
             delete_student()
         elif choice == "4":
+            search_student()
+        elif choice == "5":
             print("Goodbye!")
             break
         else:
