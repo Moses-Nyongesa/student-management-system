@@ -2,7 +2,13 @@ students = []
 
 def add_student():
     name = input("Enter student name: ")
-    age = int(input("Enter student age: "))
+    
+    try:
+        age = int(input("Enter student age: "))
+    except:
+        print("Invalid age. Must be a number.\n")
+        return
+
     student = {"name": name, "age": age}
     students.append(student)
     print("Student added successfully!\n")
@@ -38,7 +44,11 @@ def search_student():
     if not found:
         print("Student not found.\n")
 
+
 def menu():
+    print("\nWelcome to Student Management System\n")
+
+
     while True:
         print("1. Add Student")
         print("2. View Students")
