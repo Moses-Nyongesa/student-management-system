@@ -4,6 +4,8 @@ from utils import load_students, save_students
 students = load_students()
 
 def refresh_list():
+    name_entry.delete(0, END)
+    age_entry.delete(0, END)
     listbox.delete(0, END)
     for student in students:
         listbox.insert(END, f"ID: {student['id']} | {student['name']} ({student['age']})")
@@ -43,6 +45,31 @@ def delete_student():
     save_students(students)
     refresh_list()
 
+def update_student():
+    selected = listbox.get(ACTIVE)
+    if not selected:
+        return
+
+    student_id = int(selected.split("|")[0].split(":")[1])
+
+    for s in students:
+        if s["id"] == student_id:
+            new_name = name_entry.get()
+            new_age = age_entry.get()
+
+            if new_name:
+                s["name"] = new_name
+
+            if new_age:
+                try:
+                    s["age"] = int(new_age)
+                except:
+                    return
+            break
+
+    save_students(students)
+    refresh_list()
+
 # UI
 root = Tk()
 root.title("Student Management System")
@@ -55,9 +82,12 @@ Label(root, text="Age").pack()
 age_entry = Entry(root)
 age_entry.pack()
 
-Button(root, text="Add Student", command=add_student).pack()
-Button(root, text="Delete Selected", command=delete_student).pack()
+frame = Frame(root)
+frame.pack()
 
+Button(frame, text="Add Student", command=add_student).grid(row=0, column=0)
+Button(frame, text="Update Selected", command=update_student).grid(row=0, column=1)
+Button(frame, text="Delete Selected", command=delete_student).grid(row=0, column=2)
 listbox = Listbox(root, width=50)
 listbox.pack()
 
