@@ -15,8 +15,8 @@ def add_student():
     age = age_entry.get()
 
     if not name or not age:
+        status_label.config(text="Please enter name and age", fg="red")
         return
-
     try:
         age = int(age)
     except:
@@ -29,6 +29,7 @@ def add_student():
     students.append({"id": student_id, "name": name, "age": age})
     save_students(students)
     refresh_list()
+    status_label.config(text="Student added successfully!")
 
 def delete_student():
     selected = listbox.get(ACTIVE)
@@ -44,6 +45,7 @@ def delete_student():
 
     save_students(students)
     refresh_list()
+    status_label.config(text="Student deleted successfully!")
 
 def update_student():
     selected = listbox.get(ACTIVE)
@@ -69,6 +71,7 @@ def update_student():
 
     save_students(students)
     refresh_list()
+    status_label.config(text="Student updated successfully!")
 
 # UI
 root = Tk()
@@ -90,6 +93,9 @@ Button(frame, text="Update Selected", command=update_student).grid(row=0, column
 Button(frame, text="Delete Selected", command=delete_student).grid(row=0, column=2)
 listbox = Listbox(root, width=50)
 listbox.pack()
+
+status_label = Label(root, text="", fg="green")
+status_label.pack()
 
 refresh_list()
 
