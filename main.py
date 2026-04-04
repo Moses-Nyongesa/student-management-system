@@ -1,16 +1,6 @@
-import json
-
-
-def load_students():
-    try:
-        with open("students.json", "r") as file:
-            return json.load(file)
-    except:
-        return []
-
+from utils import load_students, save_students
 
 students = load_students()
-
 
 def add_student():
     name = input("Enter student name: ")
@@ -29,10 +19,6 @@ def add_student():
     save_students(students)
     print("Student added successfully!\n")
 
-
-def save_students(students):
-    with open("students.json", "w") as file:
-        json.dump(students, file)
 
 
 def view_students():

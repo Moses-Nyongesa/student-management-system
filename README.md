@@ -1,27 +1,34 @@
 # Student Management System
 
-A simple command-line application built using Python to manage student records.
+A command-line application built with Python to manage student records. The system supports full CRUD operations and stores data persistently using JSON.
 
 ## 🚀 Features
-- Add student details
+- Add students
 - View all students
-- Delete student records
+- Update student details
+- Delete students
+- Search students by name
+- Persistent storage using JSON
+- Unique student ID system
 
 ## 🛠️ Technologies Used
 - Python
+- JSON (for data storage)
 
 ## ▶️ How to Run
-1. Clone the repository
-2. Navigate to the project folder
-3. Run:
+1. Clone the repository:
+   git clone https://github.com/Moses-Nyongesa/student-management-system.git
+
+2. Navigate into the folder:
+   cd student-management-system
+
+3. Run the program:
    python main.py
 
-## 📌 Project Purpose
-This project demonstrates:
-- Basic data structures (lists, dictionaries)
-- User input handling
-- Control flow and logic building
+## 📌 Project Structure
+- main.py → main application logic
+- utils.py → file handling (load/save)
+- students.json → stored student data
 
-## 👨‍💻 Author
-Moses Nyongesa  
-GitHub: https://github.com/Moses-Nyongesa
+## 👤 Author
+Moses Nyongesa
