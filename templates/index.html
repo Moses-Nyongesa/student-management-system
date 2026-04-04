@@ -6,24 +6,55 @@
 </head>
 <body>
 
-<h1>Student Management System</h1>
+<div class="container">
+    <div class="header">
+        <h1>🎓 Student Management System</h1>
+        <p>Manage your student records below</p>
+    </div>
 
-<form action="/add" method="POST">
-    <input type="text" name="name" placeholder="Name">
-    <input type="text" name="age" placeholder="Age">
-    <button type="submit">Add Student</button>
-</form>
+    <div class="card">
+        <h2>Add New Student</h2>
+        <form action="/add" method="POST">
+            <div class="form-row">
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="number" name="age" placeholder="Age" min="1" max="100" required>
+                <button type="submit">+ Add Student</button>
+            </div>
+        </form>
+    </div>
 
-<h2>Students</h2>
+    <div class="card">
+        <div class="students-header">
+            <h2>Students</h2>
+            <span class="badge">{{ students|length }} total</span>
+        </div>
 
-<ul>
-    {% for student in students %}
-        <li>
-            ID: {{ student.id }} | {{ student.name }} ({{ student.age }})
-            <a href="/delete/{{ student.id }}">Delete</a>
-        </li>
-    {% endfor %}
-    </ul>
+        {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td><span class="id-badge">#{{ student.id }}</span></td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.age }}</td>
+                    <td><a href="/delete/{{ student.id }}" class="delete-btn" onclick="return confirm('Delete this student?')">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No students yet. Add one above!</div>
+        {% endif %}
+    </div>
+</div>
 
 </body>
 </html>
