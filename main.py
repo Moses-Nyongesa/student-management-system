@@ -68,6 +68,34 @@ def search_student():
         print("Student not found.\n")
 
 
+def update_student():
+    try:
+        student_id = int(input("Enter student ID to update: "))
+    except:
+        print("Invalid ID.\n")
+        return
+
+    for student in students:
+        if student["id"] == student_id:
+            new_name = input("Enter new name (leave blank to keep current): ")
+            new_age = input("Enter new age (leave blank to keep current): ")
+
+            if new_name:
+                student["name"] = new_name
+
+            if new_age:
+                try:
+                    student["age"] = int(new_age)
+                except:
+                    print("Invalid age. Keeping old value.")
+
+            save_students(students)
+            print("Student updated successfully!\n")
+            return
+
+    print("Student not found.\n")
+
+
 def menu():
     print("\nWelcome to Student Management System\n")
 
@@ -77,7 +105,8 @@ def menu():
         print("2. View Students")
         print("3. Delete Student")
         print("4. Search Student")
-        print("5. Exit")
+        print("5. Update Student")
+        print("6. Exit")
 
         choice = input("Choose an option: ")
 
@@ -90,6 +119,8 @@ def menu():
         elif choice == "4":
             search_student()
         elif choice == "5":
+            update_student()
+        elif choice == "6":
             print("Goodbye!")
             break
         else:
