@@ -43,4 +43,20 @@ def delete_student(id):
     save_students(students)
     return redirect("/")
 
+
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    global students
+    student = next((s for s in students if s['id'] == id), None)
+    if not student:
+        return redirect('/')
+
+    if request.method == 'POST':
+        student['name'] = request.form['name']
+        student['age'] = int(request.form['age'])
+        save_students(students)
+        return redirect('/')
+
+    return render_template('edit.html', student=student)
+
 app.run(debug=True)
