@@ -5,11 +5,48 @@
 </head>
 
 <body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark px-3 mb-3">
+        <span class="navbar-brand">Student Manager</span>
+
+        <div class="text-white">
+            Logged in as {{ session['user'] }}
+            <a href="/logout" class="btn btn-sm btn-danger ms-3">Logout</a>
+        </div>
+    </nav>
+            
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <span class="navbar-brand">Student Manager</span>
+
+        <div class="text-white">
+            Logged in as {{ session['user'] }}
+            <a href="/logout" class="btn btn-sm btn-danger ms-3">Logout</a>
+    </div>
+</nav>
 
 <div class="container mt-5">
     <div class="card shadow p-4">
         
         <h2 class="text-center mb-4">Student Manager</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+<h5 class="mb-3">Total Students: {{ total_students }}</h5>
+
+<form method="GET" action="/" class="row g-2 mb-3">
+    <div class="col-md-10">
+        <input type="text" name="search" class="form-control" placeholder="Search student">
+    </div>
+    <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
 
         <form action="/add" method="POST" class="row g-2 mb-4">
             <div class="col-md-5">
@@ -46,12 +83,3 @@
 </div>
 
 </body>
-
-
-        </form>
-
-    </div>
-</div>
-
-</body>
-</html>
