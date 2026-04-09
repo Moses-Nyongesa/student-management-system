@@ -100,7 +100,7 @@ def edit(id):
     if "user" not in session:
         return redirect("/login")
 
-    student = Student.query.get(id)
+    student = db.session.get(Student, id)
 
     if request.method == 'POST':
         student.name = request.form['name']
@@ -135,7 +135,7 @@ def delete_student(id):
     if "user" not in session:
         return redirect("/login")
 
-    student = Student.query.get(id)
+    student = db.session.get(Student, id)
     if student:
         db.session.delete(student)
         db.session.commit()
