@@ -1,23 +1,46 @@
 import os
-print(os.listdir("templates"))
-print("Static files:", os.listdir("static"))  # ← ADD THIS LINE
-
 from flask import Flask, render_template, request, redirect, session, flash
-from utils import load_students, save_students
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "secret123"
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    age = db.Column(db.Integer)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(200))
+
+print(os.listdir("templates"))
+print("Static files:", os.listdir("static"))
+print("Static folder:", app.static_folder)
+print("Root path:", app.root_path)
+
 @app.before_request
 def require_login():
-    if request.endpoint not in ("login", "static") and "user" not in session:
+    print("Endpoint:", request.endpoint)
+
+    if request.endpoint is None:
+        return
+
+    if request.endpoint not in ("login", "static", "logout") and "user" not in session:
         return redirect("/login")
-    
+
 USERNAME = "admin"
-PASSWORD = "1234"  # add this
-print("Static folder:", app.static_folder)  # Add this
-print("Root path:", app.root_path)           # Add this
-students = load_students()
+PASSWORD = "1234"
+
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def index():
@@ -27,31 +50,23 @@ def index():
     search = request.args.get("search")
 
     if search:
-        filtered_students = [
-            s for s in students if search.lower() in s["name"].lower()
-        ]
+        students = Student.query.filter(Student.name.contains(search)).all()
     else:
-        filtered_students = students
+        students = Student.query.all()
 
-    total_students = len(students)
+    total_students = Student.query.count()
 
-    return render_template(
-        "index.html",
-        students=filtered_students,
-        total_students=total_students
-    )
-
+    return render_template("index.html", students=students, total_students=total_students)
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
 
-        print("Expected:", USERNAME, PASSWORD)
-        print("Entered:", username, password)
+        user = User.query.filter_by(username=username).first()
 
-        if username == USERNAME and password == PASSWORD:
-            session["user"] = username
+        if user and check_password_hash(user.password, password):
+            session["user"] = user.username
             flash("Login successful!")
             return redirect("/")
         else:
@@ -63,37 +78,20 @@ def login():
 def add_student():
     if "user" not in session:
         return redirect("/login")
+
     name = request.form.get("name")
     age = request.form.get("age")
 
     if not name or not age:
         return redirect("/")
 
-    try:
-        age = int(age)
-    except:
-        return redirect("/")
+    new_student = Student(name=name, age=int(age))
+    db.session.add(new_student)
+    db.session.commit()
 
-    student_id = 1
-    if students:
-        student_id = max(s["id"] for s in students) + 1
-
-    students.append({"id": student_id, "name": name, "age": age})
-    save_students(students)
     flash("Student added successfully!")
-
     return redirect("/")
     
-
-@app.route("/delete/<int:id>")
-def delete_student(id):
-    if "user" not in session:
-        return redirect("/login")
-    global students
-    students = [s for s in students if s["id"] != id]
-    save_students(students)
-    flash("Student deleted!")
-    return redirect("/")
     
 
 
@@ -101,25 +99,55 @@ def delete_student(id):
 def edit(id):
     if "user" not in session:
         return redirect("/login")
-    global students
-    student = next((s for s in students if s['id'] == id), None)
-    if not student:
-        return redirect('/')
+
+    student = Student.query.get(id)
 
     if request.method == 'POST':
-        student['name'] = request.form['name']
-        student['age'] = int(request.form['age'])
-        save_students(students)
+        student.name = request.form['name']
+        student.age = int(request.form['age'])
+        db.session.commit()
+
         flash("Student updated!")
         return redirect('/')
 
     return render_template('edit.html', student=student)
+
+from werkzeug.security import generate_password_hash
+
+def create_admin():
+    with app.app_context():
+        # check if admin already exists
+        existing = User.query.filter_by(username="admin").first()
+        if not existing:
+            admin = User(
+                username="admin",
+                password=generate_password_hash("1234")
+            )
+
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Admin user created")
+        else:
+            print("⚠️ Admin already exists")
+
+@app.route("/delete/<int:id>")
+def delete_student(id):
+    if "user" not in session:
+        return redirect("/login")
+
+    student = Student.query.get(id)
+    if student:
+        db.session.delete(student)
+        db.session.commit()
+        flash("Student deleted!")
+    return redirect("/")
 
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     flash("Logged out!")
     return redirect("/login")
-    
 
-app.run(debug=True)
+if __name__ == "__main__":
+    create_admin()
+    app.run(debug=True, use_reloader=False)
